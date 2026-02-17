@@ -1,0 +1,37 @@
+buildscript {
+    repositories {**ARTIFACTORYREPOSITORY**
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        // Ensure Android Gradle Plugin is available
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        **BUILD_SCRIPT_DEPS**
+    }
+}
+allprojects {
+    repositories {**ARTIFACTORYREPOSITORY**
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    // Global Kotlin/Coroutines pinning across all subprojects (AGP 7.4.x compatible)
+    configurations.all {
+        resolutionStrategy {
+            force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-reflect:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.8.22'
+            force 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.8.22'
+            force 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3'
+            force 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+            force 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

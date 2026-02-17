@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+**APPLY_PLUGINS**
+
+android {
+    compileSdkVersion 34
+    buildToolsVersion "**BUILDTOOLS**"
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 34
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    // Match Unity's main template handling of streaming assets
+    aaptOptions {
+        noCompress = **BUILTIN_NOCOMPRESS** + unityStreamingAssets.tokenize(', ')
+        ignoreAssetsPattern =
+                "!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }
+}
+
+dependencies {
+    implementation project(':unityLibrary')
+    **DEPS**
+}
+
+// Force Kotlin/Coroutines to versions compatible with Unity's AGP/R8
+configurations.all {
+    resolutionStrategy {
+        force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'
+        force 'org.jetbrains.kotlin:kotlin-reflect:1.9.22'
+        force 'org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.9.22'
+        force 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
+    }
+}

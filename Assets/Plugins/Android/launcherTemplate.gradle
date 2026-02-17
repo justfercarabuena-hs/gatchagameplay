@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+**APPLY_PLUGINS**
+
+android {
+    def unityApplicationId = "**APPLICATION_ID**"
+    def fallbackApplicationId = "com.justfer.clashgatcha"
+    // Unity can sometimes emit an empty application id/namespace into templates.
+    // Also, if placeholder replacement fails, the token may survive (contains '*').
+    // Provide a safe fallback so AGP/manifest merger doesn't fail.
+    if (unityApplicationId == null || unityApplicationId.trim().isEmpty() || unityApplicationId.contains("*")) {
+        unityApplicationId = fallbackApplicationId
+    }
+
+    namespace unityApplicationId
+	ndkPath "**NDKPATH**"
+    compileSdkVersion 34
+    buildToolsVersion "**BUILDTOOLS**"
+
+    defaultConfig {
+		applicationId unityApplicationId
+        minSdkVersion **MINSDKVERSION**
+        targetSdkVersion 34
+    }
+
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def hasReleaseKeystore = keystorePropertiesFile.exists()
+    def keystoreProperties = new Properties()
+    if (hasReleaseKeystore) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            release {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+
+    **SIGN**
+
+    buildTypes {
+        release {
+            // If Unity didn't inject a release signing config, use debug signing so the APK is installable.
+            if (signingConfig == null) {
+                signingConfig signingConfigs.debug
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    // Match Unity's main template handling of streaming assets
+    aaptOptions {
+        noCompress = **BUILTIN_NOCOMPRESS** + unityStreamingAssets.tokenize(', ')
+        ignoreAssetsPattern =
+                "!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }
+}
+
+dependencies {
+    implementation project(':unityLibrary')
+}
+
+// Force Kotlin/Coroutines to versions compatible with Unity's AGP/R8
+configurations.all {
+    resolutionStrategy {
+        // Workaround: Unity 2022.3 (AGP 7.4.x / R8 4.0.x) can crash dexing newer recaptcha artifacts.
+        // Pin to an older, compatible version.
+        force 'com.google.android.recaptcha:recaptcha:18.0.0'
+
+        force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-reflect:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.8.22'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
+    }
+}

@@ -1,0 +1,105 @@
+// Apply Android Library plugin
+apply plugin: 'com.android.library'
+**APPLY_PLUGINS**
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+
+// Android Resolver Dependencies Start
+    implementation 'com.google.android.gms:play-services-base:18.0.1' // Assets/Firebase/Editor/AppDependencies.xml:18
+    implementation 'com.google.firebase:firebase-app-unity:13.7.0' // Assets/Firebase/Editor/AppDependencies.xml:23
+    implementation 'com.google.firebase:firebase-auth:22.1.2' // Assets/Firebase/Editor/AuthDependencies.xml:16
+    implementation 'com.google.firebase:firebase-auth-unity:13.7.0' // Assets/Firebase/Editor/AuthDependencies.xml:21
+    implementation 'com.google.firebase:firebase-common:20.4.2' // Assets/Firebase/Editor/AppDependencies.xml:16
+    implementation 'com.google.firebase:firebase-firestore:24.11.0' // Assets/Firebase/Editor/FirestoreDependencies.xml:16
+    implementation 'com.google.firebase:firebase-firestore-unity:13.7.0' // Assets/Firebase/Editor/FirestoreDependencies.xml:21
+// Android Resolver Dependencies End
+    **DEPS**
+}
+
+// Pin Kotlin + Coroutines to versions compatible with Unity's AGP/R8
+configurations.all {
+    resolutionStrategy {
+        // Workaround: Unity 2022.3 (AGP 7.4.x / R8 4.0.x) can crash dexing newer recaptcha artifacts.
+        // Pin to an older, compatible version.
+        force 'com.google.android.recaptcha:recaptcha:18.0.0'
+
+        force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-reflect:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.8.22'
+        force 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.8.22'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+        force 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
+    }
+}
+
+// Android Resolver exclusions
+// Android Resolver Exclusions Start
+android {
+  packagingOptions {
+      exclude ('/lib/armeabi/*' + '*')
+      exclude ('/lib/armeabi-v7a/*' + '*')
+      exclude ('/lib/mips/*' + '*')
+      exclude ('/lib/mips64/*' + '*')
+      exclude ('/lib/x86/*' + '*')
+      exclude ('/lib/x86_64/*' + '*')
+  }
+}
+// Android Resolver Exclusions End
+android {
+    packagingOptions {
+        exclude ('/lib/armeabi/*' + '*')
+        exclude ('/lib/mips/*' + '*')
+        exclude ('/lib/mips64/*' + '*')
+        exclude ('/lib/x86/*' + '*')
+        exclude ('/lib/x86_64/*' + '*')
+    }
+}
+
+// Main Android configuration
+android {
+    namespace "com.unity3d.player"
+    ndkPath "**NDKPATH**"
+
+    compileSdkVersion 34
+    buildToolsVersion "**BUILDTOOLS**"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+        coreLibraryDesugaringEnabled false
+    }
+
+    defaultConfig {
+        minSdkVersion **MINSDKVERSION**
+        targetSdkVersion 34
+
+        ndk {
+            abiFilters **ABIFILTERS**
+        }
+
+        versionCode **VERSIONCODE**
+        versionName "**VERSIONNAME**"
+
+        consumerProguardFiles "proguard-unity.txt" **USER_PROGUARD**
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    aaptOptions {
+        noCompress = **BUILTIN_NOCOMPRESS** + unityStreamingAssets.tokenize(', ')
+        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }
+
+    **PACKAGING_OPTIONS**
+}
+
+**IL_CPP_BUILD_SETUP**
+**SOURCE_BUILD_SETUP**
+**EXTERNAL_SOURCES**
