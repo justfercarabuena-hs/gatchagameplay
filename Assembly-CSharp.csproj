@@ -86,6 +86,7 @@
     <Compile Include="Assets\Scripts\PlayerJoystickScript\MobileJoystick.cs" />
     <Compile Include="Assets\Scripts\Database\SupabaseAuthApi.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\EnemyMovement.cs" />
+    <Compile Include="Assets\Scripts\TileMapScripts\FountainTileGizmo.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\EnemyScripts\EnemyHealth.cs" />
     <Compile Include="Assets\Scripts\Firebase\FireStoreTest.cs" />
